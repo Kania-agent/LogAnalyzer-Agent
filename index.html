@@ -1,91 +1,108 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LogAnalyzer-AI — Terminal Log Analysis</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LogAnalyzer-AI — Log File Analyzer</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="scanline"></div>
-    <div class="terminal-wrapper">
-        <div class="terminal-titlebar">
-            <div class="titlebar-dots">
-                <span class="dot red"></span>
-                <span class="dot yellow"></span>
-                <span class="dot green"></span>
-            </div>
-            <span class="titlebar-text">LogAnalyzer-AI — log-analyzer.session</span>
-            <span class="titlebar-time" id="clock"></span>
-        </div>
+<div class="app-container">
+  <header class="app-header">
+    <h1>📊 LogAnalyzer-AI</h1>
+    <p class="subtitle">Intelligent Log File Analysis & Pattern Detection</p>
+  </header>
 
-        <div class="terminal-body">
-            <div class="terminal-header">
-                <div class="ascii-art">
- _____ _____ _____ _____ ____  __    ____
-|     |   __|     |     |    \|  |  |    \
-|   --|  |  |   --|   --|  D  |  |__|  _  |
-|_____|_____|_____|_____|____/|____/|_| \_|
-                </div>
-                <p class="subtitle">[ v3.2.0 ] AI-Powered Log Analysis Engine</p>
-                <p class="subtitle">Type <span class="hl">help</span> for available commands</p>
-                <div class="separator">═══════════════════════════════════════════════════════════════════════════════</div>
-            </div>
+  <div class="upload-zone" id="uploadZone">
+    <div class="upload-icon">📁</div>
+    <p>Drag & drop a <strong>.log</strong> or <strong>.txt</strong> file here</p>
+    <p class="upload-hint">or click to browse</p>
+    <input type="file" id="fileInput" accept=".log,.txt" style="display:none">
+  </div>
 
-            <!-- Tab Navigation -->
-            <div class="term-tabs">
-                <button class="term-tab active" data-tab="viewer">Log Viewer</button>
-                <button class="term-tab" data-tab="patterns">Pattern Detection</button>
-                <button class="term-tab" data-tab="clusters">Error Clusters</button>
-            </div>
-
-            <!-- Log Viewer -->
-            <div class="term-panel active" id="viewer">
-                <div class="filter-bar">
-                    <span class="prompt-label">[filter]</span>
-                    <input type="text" id="log-filter" class="term-input" placeholder="type to filter logs..." autocomplete="off">
-                    <div class="level-buttons">
-                        <button class="level-btn level-all active" data-level="all">ALL</button>
-                        <button class="level-btn level-error" data-level="error">ERR</button>
-                        <button class="level-btn level-warn" data-level="warn">WRN</button>
-                        <button class="level-btn level-info" data-level="info">INF</button>
-                        <button class="level-btn level-debug" data-level="debug">DBG</button>
-                    </div>
-                    <span class="log-count" id="log-count">0 lines</span>
-                </div>
-                <div class="log-container" id="log-container"></div>
-            </div>
-
-            <!-- Pattern Detection -->
-            <div class="term-panel" id="patterns">
-                <div class="section-header">
-                    <span class="prompt-label">[patterns]</span>
-                    <span>AI-Detected Log Patterns</span>
-                </div>
-                <div class="patterns-grid" id="patterns-grid"></div>
-                <div class="ai-note">
-                    <span class="prompt-label">[ai]</span> Pattern detection uses frequency analysis and sequence matching. Patterns are recalculated every 30 seconds.
-                </div>
-            </div>
-
-            <!-- Error Clusters -->
-            <div class="term-panel" id="clusters">
-                <div class="section-header">
-                    <span class="prompt-label">[clusters]</span>
-                    <span>Error Clustering & Grouping</span>
-                </div>
-                <div class="clusters-container" id="clusters-container"></div>
-                <div class="cluster-stats" id="cluster-stats"></div>
-            </div>
-
-            <!-- Command Input -->
-            <div class="command-bar">
-                <span class="prompt-symbol">guest@loganalyzer:~$</span>
-                <input type="text" id="command-input" class="term-input" placeholder="enter command..." autocomplete="off">
-            </div>
-        </div>
+  <div class="stats-bar" id="statsBar" style="display:none">
+    <div class="stat-card">
+      <div class="stat-value" id="statTotal">0</div>
+      <div class="stat-label">Total Entries</div>
     </div>
+    <div class="stat-card stat-error">
+      <div class="stat-value" id="statError">0</div>
+      <div class="stat-label">ERROR</div>
+    </div>
+    <div class="stat-card stat-warn">
+      <div class="stat-value" id="statWarn">0</div>
+      <div class="stat-label">WARN</div>
+    </div>
+    <div class="stat-card stat-info">
+      <div class="stat-value" id="statInfo">0</div>
+      <div class="stat-label">INFO</div>
+    </div>
+    <div class="stat-card stat-debug">
+      <div class="stat-value" id="statDebug">0</div>
+      <div class="stat-label">DEBUG</div>
+    </div>
+  </div>
 
-    <script src="app.js"></script>
+  <div class="controls" id="controlsPanel" style="display:none">
+    <div class="control-row">
+      <div class="filter-group">
+        <label>Level Filter:</label>
+        <div class="level-toggles">
+          <button class="level-btn active" data-level="ERROR" onclick="toggleLevel(this)">ERROR</button>
+          <button class="level-btn active" data-level="WARN" onclick="toggleLevel(this)">WARN</button>
+          <button class="level-btn active" data-level="INFO" onclick="toggleLevel(this)">INFO</button>
+          <button class="level-btn active" data-level="DEBUG" onclick="toggleLevel(this)">DEBUG</button>
+        </div>
+      </div>
+      <div class="search-group">
+        <input type="text" id="searchInput" placeholder="🔍 Search logs..." oninput="applyFilters()">
+        <button class="btn btn-small" onclick="clearSearch()">Clear</button>
+      </div>
+    </div>
+    <div class="control-row">
+      <div class="tabs-toolbar">
+        <button class="tab active" onclick="switchView('logs', this)">📋 Log Entries</button>
+        <button class="tab" onclick="switchView('timeline', this)">📈 Timeline</button>
+        <button class="tab" onclick="switchView('patterns', this)">🔍 Patterns</button>
+        <button class="tab" onclick="switchView('clusters', this)">🧩 Clusters</button>
+      </div>
+      <div class="export-group">
+        <button class="btn btn-small" onclick="exportLogs()">💾 Export Filtered</button>
+        <button class="btn btn-small btn-danger" onclick="clearAll()">🗑️ Clear</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Log Entries View -->
+  <div id="view-logs" class="view active">
+    <div class="log-list" id="logList">
+      <p class="placeholder">Upload a log file to begin analysis.</p>
+    </div>
+  </div>
+
+  <!-- Timeline View -->
+  <div id="view-timeline" class="view">
+    <div class="timeline-container" id="timelineContainer">
+      <canvas id="timelineCanvas" width="1200" height="300"></canvas>
+    </div>
+    <div class="timeline-legend" id="timelineLegend"></div>
+  </div>
+
+  <!-- Patterns View -->
+  <div id="view-patterns" class="view">
+    <div class="patterns-panel" id="patternsPanel">
+      <p class="placeholder">Upload a log file to detect patterns.</p>
+    </div>
+  </div>
+
+  <!-- Clusters View -->
+  <div id="view-clusters" class="view">
+    <div class="clusters-panel" id="clustersPanel">
+      <p class="placeholder">Upload a log file to see error clusters.</p>
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
 </body>
 </html>
