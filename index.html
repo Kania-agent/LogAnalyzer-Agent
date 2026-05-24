@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LogAnalyzer-AI — Terminal Log Analysis</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="scanline"></div>
+    <div class="terminal-wrapper">
+        <div class="terminal-titlebar">
+            <div class="titlebar-dots">
+                <span class="dot red"></span>
+                <span class="dot yellow"></span>
+                <span class="dot green"></span>
+            </div>
+            <span class="titlebar-text">LogAnalyzer-AI — log-analyzer.session</span>
+            <span class="titlebar-time" id="clock"></span>
+        </div>
+
+        <div class="terminal-body">
+            <div class="terminal-header">
+                <div class="ascii-art">
+ _____ _____ _____ _____ ____  __    ____
+|     |   __|     |     |    \|  |  |    \
+|   --|  |  |   --|   --|  D  |  |__|  _  |
+|_____|_____|_____|_____|____/|____/|_| \_|
+                </div>
+                <p class="subtitle">[ v3.2.0 ] AI-Powered Log Analysis Engine</p>
+                <p class="subtitle">Type <span class="hl">help</span> for available commands</p>
+                <div class="separator">═══════════════════════════════════════════════════════════════════════════════</div>
+            </div>
+
+            <!-- Tab Navigation -->
+            <div class="term-tabs">
+                <button class="term-tab active" data-tab="viewer">Log Viewer</button>
+                <button class="term-tab" data-tab="patterns">Pattern Detection</button>
+                <button class="term-tab" data-tab="clusters">Error Clusters</button>
+            </div>
+
+            <!-- Log Viewer -->
+            <div class="term-panel active" id="viewer">
+                <div class="filter-bar">
+                    <span class="prompt-label">[filter]</span>
+                    <input type="text" id="log-filter" class="term-input" placeholder="type to filter logs..." autocomplete="off">
+                    <div class="level-buttons">
+                        <button class="level-btn level-all active" data-level="all">ALL</button>
+                        <button class="level-btn level-error" data-level="error">ERR</button>
+                        <button class="level-btn level-warn" data-level="warn">WRN</button>
+                        <button class="level-btn level-info" data-level="info">INF</button>
+                        <button class="level-btn level-debug" data-level="debug">DBG</button>
+                    </div>
+                    <span class="log-count" id="log-count">0 lines</span>
+                </div>
+                <div class="log-container" id="log-container"></div>
+            </div>
+
+            <!-- Pattern Detection -->
+            <div class="term-panel" id="patterns">
+                <div class="section-header">
+                    <span class="prompt-label">[patterns]</span>
+                    <span>AI-Detected Log Patterns</span>
+                </div>
+                <div class="patterns-grid" id="patterns-grid"></div>
+                <div class="ai-note">
+                    <span class="prompt-label">[ai]</span> Pattern detection uses frequency analysis and sequence matching. Patterns are recalculated every 30 seconds.
+                </div>
+            </div>
+
+            <!-- Error Clusters -->
+            <div class="term-panel" id="clusters">
+                <div class="section-header">
+                    <span class="prompt-label">[clusters]</span>
+                    <span>Error Clustering & Grouping</span>
+                </div>
+                <div class="clusters-container" id="clusters-container"></div>
+                <div class="cluster-stats" id="cluster-stats"></div>
+            </div>
+
+            <!-- Command Input -->
+            <div class="command-bar">
+                <span class="prompt-symbol">guest@loganalyzer:~$</span>
+                <input type="text" id="command-input" class="term-input" placeholder="enter command..." autocomplete="off">
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
